@@ -28,6 +28,10 @@ if [ "$OS" = "Darwin" ]; then
     dotnet publish -c Release -r $RUNTIME --self-contained true -p:PublishSingleFile=true -o "$MACOS_DIR"
     find "$MACOS_DIR" -name "*.pdb" -type f -delete
 
+    RESOURCES_DIR="${APP_BUNDLE}/Contents/Resources"
+    mkdir -p "$RESOURCES_DIR"
+    cp assets/AppIcon.icns "$RESOURCES_DIR/AppIcon.icns"
+
     cat > "${APP_BUNDLE}/Contents/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -39,6 +43,8 @@ if [ "$OS" = "Darwin" ]; then
     <string>$APP_NAME</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>

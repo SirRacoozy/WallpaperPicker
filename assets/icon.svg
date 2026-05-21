@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#0d1b3e"/>
+      <stop offset="55%"  stop-color="#1a2f6b"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="65%" r="45%">
+      <stop offset="0%"   stop-color="#ff6b35" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#ff6b35" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="shape">
+      <rect width="1024" height="1024" rx="220" ry="220"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#shape)">
+    <!-- Sky -->
+    <rect width="1024" height="1024" fill="url(#sky)"/>
+
+    <!-- Sun glow -->
+    <ellipse cx="512" cy="620" rx="380" ry="280" fill="url(#glow)"/>
+
+    <!-- Sun -->
+    <circle cx="512" cy="612" r="90" fill="#ff9f43"/>
+    <circle cx="512" cy="612" r="72" fill="#ff6b35"/>
+
+    <!-- Horizon rays -->
+    <rect x="160" y="608" width="192" height="8"  rx="4"   fill="#ff6b35" opacity="0.5"/>
+    <rect x="672" y="608" width="192" height="8"  rx="4"   fill="#ff6b35" opacity="0.5"/>
+    <rect x="220" y="632" width="132" height="5"  rx="2.5" fill="#ff6b35" opacity="0.3"/>
+    <rect x="672" y="632" width="132" height="5"  rx="2.5" fill="#ff6b35" opacity="0.3"/>
+
+    <!-- Back mountains -->
+    <polygon points="0,780 160,500 280,640 400,460 520,600 640,430 760,570 880,430 1024,540 1024,1024 0,1024"
+             fill="#0a1628"/>
+
+    <!-- Front mountains -->
+    <polygon points="0,900 180,680 320,820 460,620 600,760 740,600 880,720 980,640 1024,700 1024,1024 0,1024"
+             fill="#060e1c"/>
+
+    <!-- Stars -->
+    <circle cx="120" cy="140" r="4" fill="white" opacity="0.9"/>
+    <circle cx="260" cy="90"  r="3" fill="white" opacity="0.7"/>
+    <circle cx="460" cy="110" r="4" fill="white" opacity="0.8"/>
+    <circle cx="660" cy="75"  r="3" fill="white" opacity="0.7"/>
+    <circle cx="820" cy="140" r="4" fill="white" opacity="0.9"/>
+    <circle cx="940" cy="95"  r="3" fill="white" opacity="0.6"/>
+    <circle cx="70"  cy="280" r="3" fill="white" opacity="0.6"/>
+    <circle cx="380" cy="210" r="3" fill="white" opacity="0.8"/>
+    <circle cx="590" cy="180" r="4" fill="white" opacity="0.9"/>
+    <circle cx="740" cy="230" r="3" fill="white" opacity="0.7"/>
+    <circle cx="190" cy="320" r="2" fill="white" opacity="0.5"/>
+    <circle cx="870" cy="280" r="3" fill="white" opacity="0.6"/>
+  </g>
+</svg>
