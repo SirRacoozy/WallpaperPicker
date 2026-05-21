@@ -78,6 +78,11 @@ Pre-built binaries are attached to every [release](../../releases/latest):
 | Linux | `WallpaperPicker` — self-contained binary |
 | Windows | `WallpaperPicker.exe` — self-contained executable |
 
+> **macOS note:** The app is ad-hoc signed but not notarized. On first launch, right-click → **Open** and confirm. Alternatively, remove the quarantine flag once after installing:
+> ```bash
+> xattr -cr /Applications/WallpaperPicker.app
+> ```
+
 ---
 
 ## Requirements (build from source)
