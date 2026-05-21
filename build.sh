@@ -6,11 +6,12 @@ PROJECT_NAME="WallpaperPicker"
 OS=$(uname -s)
 
 # ==========================================
-# macOS → .app Bundle
+# macOS → .app Bundle + DMG Installer
 # ==========================================
 if [ "$OS" = "Darwin" ]; then
     APP_BUNDLE="${APP_NAME}.app"
     MACOS_DIR="${APP_BUNDLE}/Contents/MacOS"
+    DMG_NAME="${APP_NAME}.dmg"
 
     if [ "$(uname -m)" = "arm64" ]; then
         RUNTIME="osx-arm64"
@@ -20,8 +21,9 @@ if [ "$OS" = "Darwin" ]; then
         echo "💻 Intel processor detected."
     fi
 
+    # ---- Build .app bundle ----
     echo "🚀 Building $APP_NAME for $RUNTIME..."
-    rm -rf "$APP_BUNDLE"
+    rm -rf "$APP_BUNDLE" "$DMG_NAME"
 
     dotnet publish -c Release -r $RUNTIME --self-contained true -p:PublishSingleFile=true -o "$MACOS_DIR"
     find "$MACOS_DIR" -name "*.pdb" -type f -delete
@@ -44,7 +46,33 @@ if [ "$OS" = "Darwin" ]; then
 EOF
 
     chmod +x "$MACOS_DIR/$PROJECT_NAME"
-    echo "✅ Done! App bundle: $(pwd)/$APP_BUNDLE"
+    echo "✅ App bundle: $(pwd)/$APP_BUNDLE"
+
+    # ---- Create DMG installer ----
+    echo "📦 Creating DMG installer..."
+
+    if command -v create-dmg &>/dev/null; then
+        create-dmg \
+            --volname "$APP_NAME" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "$APP_BUNDLE" 150 200 \
+            --app-drop-link 450 200 \
+            --hide-extension "$APP_BUNDLE" \
+            --no-internet-enable \
+            "$DMG_NAME" \
+            "$APP_BUNDLE"
+    else
+        echo "  ℹ️  create-dmg not found — basic DMG (run 'brew install create-dmg' for the styled installer)"
+        STAGING=$(mktemp -d)
+        cp -R "$APP_BUNDLE" "$STAGING/"
+        ln -s /Applications "$STAGING/Applications"
+        hdiutil create -volname "$APP_NAME" -srcfolder "$STAGING" -ov -format UDZO "$DMG_NAME" >/dev/null
+        rm -rf "$STAGING"
+    fi
+
+    echo "✅ DMG installer: $(pwd)/$DMG_NAME"
 
 # ==========================================
 # Linux → self-contained binary

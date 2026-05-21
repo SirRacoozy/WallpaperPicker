@@ -69,11 +69,13 @@ dotnet run
 
 The build scripts auto-detect your CPU architecture (x64 / ARM64).
 
-**macOS** — creates a `.app` bundle:
+**macOS** — creates a `.app` bundle and a `.dmg` installer:
 ```bash
 chmod +x build.sh && ./build.sh
-# → WallpaperPicker.app  (drag to /Applications)
+# → WallpaperPicker.dmg  (styled drag-to-Applications installer)
+# → WallpaperPicker.app  (or use the bundle directly)
 ```
+> For the styled DMG window: `brew install create-dmg`. Falls back to a basic DMG if not installed.
 
 **Linux** — creates a self-contained binary:
 ```bash
