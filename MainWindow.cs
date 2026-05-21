@@ -13,6 +13,7 @@ class MainWindow : Window
     private readonly WrapPanel _imageGrid;
     private readonly Button _setWallpaperBtn;
     private readonly Button _refreshBtn;
+    private readonly Button _favBtn;
     private readonly TextBlock _statusText;
     private readonly ComboBox _langCombo;
     private string? _selectedHighResUrl;
@@ -20,6 +21,8 @@ class MainWindow : Window
 
     public MainWindow()
     {
+        FavoritesManager.Load();
+
         var sysLang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         L.Current = Array.IndexOf(L.Codes, sysLang) >= 0 ? sysLang : "en";
 
@@ -28,9 +31,10 @@ class MainWindow : Window
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Background = Brushes.Black;
 
-        _refreshBtn     = new Button { Margin = new Thickness(5), Background = Brushes.DarkSlateBlue, Foreground = Brushes.White, VerticalAlignment = VerticalAlignment.Center };
-        _setWallpaperBtn = new Button { Margin = new Thickness(5), Background = Brushes.DarkGreen,    Foreground = Brushes.White, VerticalAlignment = VerticalAlignment.Center, IsEnabled = false };
-        _statusText     = new TextBlock { Foreground = Brushes.LightGray, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(15, 0) };
+        _refreshBtn      = new Button { Margin = new Thickness(5), Background = Brushes.DarkSlateBlue, Foreground = Brushes.White, VerticalAlignment = VerticalAlignment.Center };
+        _setWallpaperBtn = new Button { Margin = new Thickness(5), Background = Brushes.DarkGreen,     Foreground = Brushes.White, VerticalAlignment = VerticalAlignment.Center, IsEnabled = false };
+        _favBtn          = new Button { Margin = new Thickness(5), Background = new SolidColorBrush(Color.FromRgb(90, 70, 10)), Foreground = Brushes.White, VerticalAlignment = VerticalAlignment.Center };
+        _statusText      = new TextBlock { Foreground = Brushes.LightGray, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(15, 0) };
 
         _langCombo = new ComboBox
         {
@@ -51,6 +55,7 @@ class MainWindow : Window
         var topBar = new DockPanel { Margin = new Thickness(10), Background = Brushes.Black };
         DockPanel.SetDock(_refreshBtn,      Dock.Left);  topBar.Children.Add(_refreshBtn);
         DockPanel.SetDock(_setWallpaperBtn, Dock.Left);  topBar.Children.Add(_setWallpaperBtn);
+        DockPanel.SetDock(_favBtn,          Dock.Left);  topBar.Children.Add(_favBtn);
         DockPanel.SetDock(_langCombo,       Dock.Right); topBar.Children.Add(_langCombo);
         topBar.Children.Add(_statusText);
 
@@ -64,6 +69,11 @@ class MainWindow : Window
 
         _refreshBtn.Click      += async (_, _) => await LoadRandomImages();
         _setWallpaperBtn.Click += async (_, _) => await SetWallpaper();
+        _favBtn.Click += (_, _) =>
+        {
+            var fw = new FavoritesWindow();
+            fw.Show(this);
+        };
 
         ApplyLanguage();
         _ = LoadRandomImages();
@@ -80,6 +90,7 @@ class MainWindow : Window
         Title = L.Get("title");
         _refreshBtn.Content      = L.Get("loadBtn");
         _setWallpaperBtn.Content = L.Get("setBtn");
+        _favBtn.Content          = L.Get("favBtn");
         _statusText.Text         = L.Status(_status.Key, _status.Arg);
     }
 
@@ -107,14 +118,41 @@ class MainWindow : Window
                 {
                     BorderBrush     = Brushes.Transparent,
                     BorderThickness = new Thickness(4),
-                    Margin          = new Thickness(5),
                     CornerRadius    = new CornerRadius(5),
                     Child           = new Avalonia.Controls.Image { Source = bitmap, Width = 300, Height = 200, Stretch = Stretch.UniformToFill },
                 };
 
+                var isFav = FavoritesManager.IsFavorite(seed);
+                var starBtn = new Button
+                {
+                    Content             = isFav ? "★" : "☆",
+                    Foreground          = isFav ? Brushes.Gold : Brushes.White,
+                    Background          = new SolidColorBrush(Color.FromArgb(140, 0, 0, 0)),
+                    BorderThickness     = new Thickness(0),
+                    Padding             = new Thickness(4, 2),
+                    FontSize            = 18,
+                    Cursor              = new Cursor(StandardCursorType.Hand),
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    VerticalAlignment   = VerticalAlignment.Top,
+                    Margin              = new Thickness(0, 4, 4, 0),
+                    ZIndex              = 1,
+                };
+
+                starBtn.Click += (_, e) =>
+                {
+                    e.Handled = true;
+                    var nowFav = FavoritesManager.Toggle(seed);
+                    starBtn.Content    = nowFav ? "★" : "☆";
+                    starBtn.Foreground = nowFav ? Brushes.Gold : Brushes.White;
+                };
+
+                var overlay = new Grid { Width = 300, Height = 200, Margin = new Thickness(5) };
+                overlay.Children.Add(border);
+                overlay.Children.Add(starBtn);
+
                 var btn = new Button
                 {
-                    Content    = border,
+                    Content    = overlay,
                     Padding    = new Thickness(0),
                     Background = Brushes.Transparent,
                     Cursor     = new Cursor(StandardCursorType.Hand),
@@ -123,11 +161,11 @@ class MainWindow : Window
                 btn.Click += (_, _) =>
                 {
                     foreach (var child in _imageGrid.Children)
-                        if (child is Button b && b.Content is Border cBorder)
+                        if (child is Button b && b.Content is Grid g && g.Children[0] is Border cBorder)
                             cBorder.BorderBrush = Brushes.Transparent;
 
-                    border.BorderBrush      = Brushes.DodgerBlue;
-                    _selectedHighResUrl     = highResUrl;
+                    border.BorderBrush         = Brushes.DodgerBlue;
+                    _selectedHighResUrl        = highResUrl;
                     _setWallpaperBtn.IsEnabled = true;
                     SetStatus("selected");
                 };

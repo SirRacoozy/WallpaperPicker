@@ -31,6 +31,23 @@ A lightweight, cross-platform desktop app to browse random photos and set them a
 - **Cross-platform** — works on macOS, Windows, and a wide range of Linux desktop environments
 - **Covers all your displays** — sets the wallpaper on every monitor at once
 - **Multi-language UI** — auto-detects your system language; English fallback if unsupported
+- **Favorites** — star any image to save it; revisit, set, or remove saved wallpapers anytime
+
+### Favorites
+
+Click the **★** star in the top-right corner of any image to save it as a favourite. Favourites are stored locally and persist across sessions.
+
+<p align="center">
+  <img src="assets/screenshot-favorites.png" alt="Favorites Window" width="700">
+</p>
+
+Open **★ Favorites** from the toolbar to:
+
+- Preview all saved wallpapers at a glance
+- Set any favourite directly as your wallpaper
+- Remove entries with a single click
+
+---
 
 ### Linux Desktop Environment Support
 
@@ -51,7 +68,19 @@ A lightweight, cross-platform desktop app to browse random photos and set them a
 
 ---
 
-## Requirements
+## Download
+
+Pre-built binaries are attached to every [release](../../releases/latest):
+
+| Platform | File |
+|---|---|
+| macOS | `WallpaperPicker.dmg` — drag-to-Applications installer |
+| Linux | `WallpaperPicker` — self-contained binary |
+| Windows | `WallpaperPicker.exe` — self-contained executable |
+
+---
+
+## Requirements (build from source)
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 
@@ -133,11 +162,19 @@ The app automatically selects your system language on startup. If your system la
 
 ```
 WallpaperPicker/
-├── Program.cs              # All application code
+├── Program.cs              # App entry point
+├── MainWindow.cs           # Main UI and image grid
+├── FavoritesWindow.cs      # Favorites viewer window
+├── FavoritesManager.cs     # Favorites persistence (JSON)
+├── WallpaperSetter.cs      # Platform-specific wallpaper setter
+├── Localization.cs         # Translations (EN/DE/FR/ES/IT)
 ├── WallpaperPicker.csproj  # Project file
-├── build.sh                # macOS .app bundle builder
+├── build.sh                # macOS .app + DMG / Linux binary builder
+├── build.ps1               # Windows .exe builder
 └── assets/
-    └── screenshot.png
+    ├── screenshot.png
+    ├── screenshot-favorites.png
+    └── AppIcon.icns
 ```
 
 ---
@@ -155,6 +192,7 @@ Ein schlanker, plattformübergreifender Desktop-App zum Browsen zufälliger Foto
 - **High-Res-Download** — lädt das Bild in 2880×1800 herunter, bevor es gesetzt wird
 - **Plattformübergreifend** — macOS, Windows und viele Linux-Desktop-Umgebungen
 - **Sprachauswahl** — App erkennt die Systemsprache automatisch, Fallback auf Englisch
+- **Favoriten** — Stern-Icon anklicken, um Bilder zu speichern; im Favoriten-Fenster anzeigen, setzen oder entfernen
 
 ```bash
 dotnet run         # direkt starten
@@ -179,6 +217,7 @@ Une application de bureau légère et multiplateforme pour parcourir des photos 
 - **Téléchargement haute résolution** — télécharge l'image en 2880×1800 avant de l'appliquer
 - **Multiplateforme** — macOS, Windows et de nombreux environnements Linux
 - **Interface multilingue** — détecte automatiquement la langue du système, anglais par défaut
+- **Favoris** — étoilez une image pour la sauvegarder ; retrouvez, appliquez ou supprimez vos favoris dans le panneau dédié
 
 ```bash
 dotnet run         # lancer directement
@@ -203,6 +242,7 @@ Una aplicación de escritorio ligera y multiplataforma para explorar fotos aleat
 - **Descarga en alta resolución** — descarga la imagen en 2880×1800 antes de aplicarla
 - **Multiplataforma** — macOS, Windows y muchos entornos de escritorio Linux
 - **Interfaz multilingüe** — detecta automáticamente el idioma del sistema, inglés como alternativa
+- **Favoritos** — marca imágenes con la estrella para guardarlas; visualiza, aplica o elimina desde el panel de favoritos
 
 ```bash
 dotnet run         # ejecutar directamente
@@ -227,6 +267,7 @@ Un'applicazione desktop leggera e multipiattaforma per sfogliare foto casuali e 
 - **Download in alta risoluzione** — scarica l'immagine in 2880×1800 prima di applicarla
 - **Multipiattaforma** — macOS, Windows e molti ambienti desktop Linux
 - **Interfaccia multilingue** — rileva automaticamente la lingua del sistema, inglese come lingua di riserva
+- **Preferiti** — aggiungi una stella per salvare un'immagine; visualizza, applica o rimuovi i preferiti dal pannello dedicato
 
 ```bash
 dotnet run         # avvio diretto
