@@ -59,20 +59,33 @@ A lightweight, cross-platform desktop app to browse random photos and set them a
 
 ## Build & Run
 
-### Run directly
+### Run directly (all platforms)
 
 ```bash
 dotnet run
 ```
 
-### Build a standalone macOS app bundle
+### Build a standalone binary
 
+The build scripts auto-detect your CPU architecture (x64 / ARM64).
+
+**macOS** — creates a `.app` bundle:
 ```bash
-chmod +x build.sh
-./build.sh
+chmod +x build.sh && ./build.sh
+# → WallpaperPicker.app  (drag to /Applications)
 ```
 
-This produces a `WallpaperPicker.app` you can move to your `/Applications` folder.
+**Linux** — creates a self-contained binary:
+```bash
+chmod +x build.sh && ./build.sh
+# → dist/WallpaperPicker
+```
+
+**Windows** — creates a self-contained `.exe`:
+```powershell
+.\build.ps1
+# → dist\WallpaperPicker.exe
+```
 
 ---
 
@@ -142,8 +155,9 @@ Ein schlanker, plattformübergreifender Desktop-App zum Browsen zufälliger Foto
 - **Sprachauswahl** — App erkennt die Systemsprache automatisch, Fallback auf Englisch
 
 ```bash
-dotnet run        # direkt starten
-./build.sh        # macOS .app Bundle erzeugen
+dotnet run         # direkt starten
+./build.sh         # macOS: .app Bundle / Linux: dist/WallpaperPicker
+.\build.ps1        # Windows: dist\WallpaperPicker.exe
 ```
 
 1. **Neue Bilder laden** klicken — 9 zufällige Fotos erscheinen im Raster.
@@ -165,8 +179,9 @@ Une application de bureau légère et multiplateforme pour parcourir des photos 
 - **Interface multilingue** — détecte automatiquement la langue du système, anglais par défaut
 
 ```bash
-dotnet run        # lancer directement
-./build.sh        # créer un bundle .app macOS
+dotnet run         # lancer directement
+./build.sh         # macOS: bundle .app / Linux: dist/WallpaperPicker
+.\build.ps1        # Windows: dist\WallpaperPicker.exe
 ```
 
 1. Cliquer sur **Charger de nouvelles images** — 9 photos apparaissent dans la grille.
@@ -188,8 +203,9 @@ Una aplicación de escritorio ligera y multiplataforma para explorar fotos aleat
 - **Interfaz multilingüe** — detecta automáticamente el idioma del sistema, inglés como alternativa
 
 ```bash
-dotnet run        # ejecutar directamente
-./build.sh        # crear un bundle .app de macOS
+dotnet run         # ejecutar directamente
+./build.sh         # macOS: bundle .app / Linux: dist/WallpaperPicker
+.\build.ps1        # Windows: dist\WallpaperPicker.exe
 ```
 
 1. Hacer clic en **Cargar nuevas imágenes** — aparecen 9 fotos en la cuadrícula.
@@ -211,8 +227,9 @@ Un'applicazione desktop leggera e multipiattaforma per sfogliare foto casuali e 
 - **Interfaccia multilingue** — rileva automaticamente la lingua del sistema, inglese come lingua di riserva
 
 ```bash
-dotnet run        # avvio diretto
-./build.sh        # creare un bundle .app per macOS
+dotnet run         # avvio diretto
+./build.sh         # macOS: bundle .app / Linux: dist/WallpaperPicker
+.\build.ps1        # Windows: dist\WallpaperPicker.exe
 ```
 
 1. Cliccare su **Carica nuove immagini** — appaiono 9 foto nella griglia.
