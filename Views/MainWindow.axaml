@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="WallpaperPicker.Views.MainWindow"
+        Width="1000" Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="Black">
+  <DockPanel>
+    <DockPanel DockPanel.Dock="Top" Margin="10" Background="Black">
+      <Button x:Name="RefreshBtn" DockPanel.Dock="Left" Margin="5" Background="DarkSlateBlue" Foreground="White" VerticalAlignment="Center" />
+      <Button x:Name="SetWallpaperBtn" DockPanel.Dock="Left" Margin="5" Background="DarkGreen" Foreground="White" VerticalAlignment="Center" IsEnabled="False" />
+      <Button x:Name="FavBtn" DockPanel.Dock="Left" Margin="5" Background="#5A460A" Foreground="White" VerticalAlignment="Center" />
+      <ComboBox x:Name="LangCombo" DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center" />
+      <ComboBox x:Name="CountCombo" DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center" Width="60" />
+      <TextBlock x:Name="StatusText" Foreground="LightGray" VerticalAlignment="Center" Margin="15,0" />
+    </DockPanel>
+    <ScrollViewer>
+      <WrapPanel x:Name="ImageGrid" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10" />
+    </ScrollViewer>
+  </DockPanel>
+</Window>

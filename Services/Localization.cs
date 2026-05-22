@@ -13,7 +13,7 @@ static class L
 
     public static readonly string[] Codes = [.. Languages.Keys];
 
-    private static readonly Dictionary<string, Dictionary<string, string>> _t = new()
+    private static readonly Dictionary<string, Dictionary<string, string>> Translations = new()
     {
         ["en"] = new()
         {
@@ -113,7 +113,7 @@ static class L
     };
 
     public static string Get(string key) =>
-        _t.TryGetValue(Current, out var d) && d.TryGetValue(key, out var v) ? v : key;
+        Translations.TryGetValue(Current, out var d) && d.TryGetValue(key, out var v) ? v : key;
 
     public static string Status(string key, string arg = "") =>
         string.Format(Get(key), arg);
