@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Serilog;
 using WallpaperPicker;
 
 static class FavoritesManager
@@ -15,8 +16,13 @@ static class FavoritesManager
         {
             if (!File.Exists(Path)) return;
             _seeds = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Path)) ?? [];
+            Log.Information("Loaded {Count} favorites from {Path}", _seeds.Count, Path);
         }
-        catch { _seeds = []; }
+        catch
+        {
+            Log.Warning("Failed to load favorites from {Path}", Path);
+            _seeds = [];
+        }
     }
 
     public static bool IsFavorite(string seed) => _seeds.Contains(seed);
@@ -37,5 +43,6 @@ static class FavoritesManager
     {
         Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Path)!);
         File.WriteAllText(Path, JsonSerializer.Serialize(_seeds));
+        Log.Debug("Saved {Count} favorites to {Path}", _seeds.Count, Path);
     }
 }

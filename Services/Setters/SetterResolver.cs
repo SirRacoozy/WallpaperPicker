@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace WallpaperPicker.Services.Setters;
 
 static class SetterResolver
@@ -5,9 +7,15 @@ static class SetterResolver
     public static IWallpaperSetter Resolve()
     {
         if (OperatingSystem.IsMacOS())
-            return new MacOsWallpaperSetter();
+        {
+            Log.Debug("Detected OS: macOS");
+            return LogSetter(new MacOsWallpaperSetter());
+        }
         if (OperatingSystem.IsWindows())
-            return new WindowsWallpaperSetter();
+        {
+            Log.Debug("Detected OS: Windows");
+            return LogSetter(new WindowsWallpaperSetter());
+        }
 
         return ResolveLinux();
     }
@@ -16,31 +24,43 @@ static class SetterResolver
     {
         var desktop = WallpaperHelper.Env("XDG_CURRENT_DESKTOP").ToLowerInvariant();
         var session = WallpaperHelper.Env("DESKTOP_SESSION").ToLowerInvariant();
+        Log.Debug("Detected Linux DE: Desktop={Desktop}, Session={Session}", desktop, session);
+
+        IWallpaperSetter setter;
 
         if (WallpaperHelper.Contains(desktop, session, "gnome", "unity", "budgie", "ubuntu"))
-            return new GnomeWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "kde", "plasma"))
-            return new KdeWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "xfce"))
-            return new XfceWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "mate"))
-            return new MateWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "cinnamon", "x-cinnamon"))
-            return new CinnamonWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "lxqt"))
-            return new LxqtWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "lxde"))
-            return new LxdeWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "deepin", "dde"))
-            return new DeepinWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "enlightenment"))
-            return new EnlightenmentWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "sway") || !string.IsNullOrEmpty(WallpaperHelper.Env("SWAYSOCK")))
-            return new SwayWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "hyprland") || !string.IsNullOrEmpty(WallpaperHelper.Env("HYPRLAND_INSTANCE_SIGNATURE")))
-            return new HyprlandWallpaperSetter();
-        if (WallpaperHelper.Contains(desktop, session, "i3", "openbox", "fluxbox", "icewm", "jwm"))
-            return new WmFallbackWallpaperSetter();
-        return new GenericFallbackWallpaperSetter();
+            setter = new GnomeWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "kde", "plasma"))
+            setter = new KdeWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "xfce"))
+            setter = new XfceWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "mate"))
+            setter = new MateWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "cinnamon", "x-cinnamon"))
+            setter = new CinnamonWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "lxqt"))
+            setter = new LxqtWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "lxde"))
+            setter = new LxdeWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "deepin", "dde"))
+            setter = new DeepinWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "enlightenment"))
+            setter = new EnlightenmentWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "sway") || !string.IsNullOrEmpty(WallpaperHelper.Env("SWAYSOCK")))
+            setter = new SwayWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "hyprland") || !string.IsNullOrEmpty(WallpaperHelper.Env("HYPRLAND_INSTANCE_SIGNATURE")))
+            setter = new HyprlandWallpaperSetter();
+        else if (WallpaperHelper.Contains(desktop, session, "i3", "openbox", "fluxbox", "icewm", "jwm"))
+            setter = new WmFallbackWallpaperSetter();
+        else
+            setter = new GenericFallbackWallpaperSetter();
+
+        return LogSetter(setter);
+    }
+
+    private static IWallpaperSetter LogSetter(IWallpaperSetter setter)
+    {
+        Log.Debug("Using wallpaper setter: {Setter}", setter.GetType().Name);
+        return setter;
     }
 }

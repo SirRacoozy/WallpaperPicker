@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Serilog;
 
 namespace WallpaperPicker.Views;
 
@@ -24,6 +25,7 @@ partial class MainWindow : Window
 
         var sysLang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         L.Current = Array.IndexOf(L.Codes, sysLang) >= 0 ? sysLang : "en";
+        Log.Information("Language set to {Language}", L.Current);
 
         LangCombo.ItemsSource = L.Codes.Select(c => { var (f, n) = L.Languages[c]; return $"{f} {n}"; }).ToList();
         LangCombo.SelectedIndex = Array.IndexOf(L.Codes, L.Current);
@@ -43,6 +45,7 @@ partial class MainWindow : Window
         {
             if (CountCombo.SelectedItem is int count)
             {
+                Log.Information("Image count changed to {Count}", count);
                 SettingsManager.SetImageCount(count);
                 await LoadRandomImages();
             }
@@ -52,6 +55,7 @@ partial class MainWindow : Window
         SetWallpaperBtn.Click += async (_, _) => await SetWallpaper();
         FavBtn.Click += (_, _) =>
         {
+            Log.Information("Opening favorites window");
             var fw = new FavoritesWindow();
             fw.Show(this);
         };
@@ -83,6 +87,7 @@ partial class MainWindow : Window
         ImageGrid.Children.Clear();
         var count = SettingsManager.ImageCount;
         SetStatus("loading", count.ToString());
+        Log.Information("Loading {Count} random images", count);
 
         await Task.WhenAll(Enumerable.Range(0, count).Select(async _ =>
         {
@@ -124,6 +129,8 @@ partial class MainWindow : Window
                 {
                     e.Handled = true;
                     var nowFav = FavoritesManager.Toggle(seed);
+                    var action = nowFav ? "added to" : "removed from";
+                    Log.Information("Seed {Seed} {Action} favorites", seed, action);
                     starBtn.Content = nowFav ? "★" : "☆";
                     starBtn.Foreground = nowFav ? Brushes.Gold : Brushes.White;
                 };
@@ -150,18 +157,21 @@ partial class MainWindow : Window
                     _selectedHighResUrl = highResUrl;
                     SetWallpaperBtn.IsEnabled = true;
                     SetStatus("selected");
+                    Log.Information("Image selected: {Url}", highResUrl);
                 };
 
                 ImageGrid.Children.Add(btn);
             }
             catch (Exception ex)
             {
+                Log.Warning(ex, "Failed to load preview image {Url}", previewUrl);
                 SetStatus("errorLoad", ex.Message);
             }
         }));
 
         RefreshBtn.IsEnabled = true;
         SetStatus("loaded");
+        Log.Information("Finished loading {Count} images", count);
     }
 
     private async Task SetWallpaper()
@@ -171,6 +181,7 @@ partial class MainWindow : Window
         SetWallpaperBtn.IsEnabled = false;
         RefreshBtn.IsEnabled = false;
         SetStatus("downloading");
+        Log.Information("Downloading wallpaper from {Url}", _selectedHighResUrl);
 
         try
         {
@@ -181,9 +192,11 @@ partial class MainWindow : Window
             SetStatus("setting");
             await Task.Run(() => WallpaperSetter.Set(filePath));
             SetStatus("done");
+            Log.Information("Wallpaper set successfully from {Url}", _selectedHighResUrl);
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "Failed to set wallpaper from {Url}", _selectedHighResUrl);
             SetStatus("errorSet", ex.Message);
         }
         finally

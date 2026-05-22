@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Serilog;
 
 namespace WallpaperPicker.Services.Setters;
 
@@ -24,8 +25,16 @@ static class WallpaperHelper
             var p = Process.Start(psi);
             var output = p?.StandardOutput.ReadToEnd();
             p?.WaitForExit();
+
+            if (p?.ExitCode != 0)
+                Log.Warning("Command failed: {Cmd} {Args} (exit code {ExitCode})", cmd, string.Join(" ", args), p?.ExitCode);
+
             return (p?.ExitCode == 0, output);
         }
-        catch { return (false, null); }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to execute command: {Cmd} {Args}", cmd, string.Join(" ", args));
+            return (false, null);
+        }
     }
 }

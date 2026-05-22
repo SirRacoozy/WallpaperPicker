@@ -13,6 +13,9 @@
     <PackageReference Include="Avalonia"/>
     <PackageReference Include="Avalonia.Desktop"/>
     <PackageReference Include="Avalonia.Themes.Fluent"/>
+    <PackageReference Include="Serilog"/>
+    <PackageReference Include="Serilog.Sinks.Console"/>
+    <PackageReference Include="Serilog.Sinks.File"/>
   </ItemGroup>
 
 </Project>

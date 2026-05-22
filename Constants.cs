@@ -22,4 +22,10 @@ internal static class Constants
         ApplicationConfigDirectory,
         "settings.json"
     );
+
+    internal static readonly string LogDirectory = Path.Combine
+    (
+        ApplicationConfigDirectory,
+        "logs"
+    );
 }

@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Serilog;
 
 namespace WallpaperPicker.Views;
 
@@ -37,6 +38,7 @@ partial class FavoritesWindow : Window
         ImageGrid.Children.Clear();
 
         var seeds = FavoritesManager.Seeds.ToList();
+        Log.Information("Loading {Count} favorites", seeds.Count);
         if (seeds.Count == 0) { ImageGrid.Children.Add(_emptyHint); return; }
 
         await Task.WhenAll(seeds.Select(seed => AddCard(seed)));
@@ -95,12 +97,18 @@ partial class FavoritesWindow : Window
             {
                 setBtn.IsEnabled = false;
                 removeBtn.IsEnabled = false;
+                Log.Information("Setting wallpaper from favorite {Seed}", seed);
                 try
                 {
                     var data = await _http.GetByteArrayAsync(highResUrl);
                     var filePath = Path.Combine(Path.GetTempPath(), $"wallpaper_{DateTimeOffset.Now.ToUnixTimeSeconds()}.jpg");
                     await File.WriteAllBytesAsync(filePath, data);
                     await Task.Run(() => WallpaperSetter.Set(filePath));
+                    Log.Information("Wallpaper set successfully from favorite {Seed}", seed);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to set wallpaper from favorite {Seed}", seed);
                 }
                 finally
                 {
@@ -113,12 +121,16 @@ partial class FavoritesWindow : Window
             {
                 FavoritesManager.Remove(seed);
                 ImageGrid.Children.Remove(card);
+                Log.Information("Removed seed {Seed} from favorites", seed);
                 if (ImageGrid.Children.Count == 0)
                     ImageGrid.Children.Add(_emptyHint);
             };
 
             ImageGrid.Children.Add(card);
         }
-        catch { }
+        catch
+        {
+            Log.Warning("Failed to load preview for favorite seed {Seed}", seed);
+        }
     }
 }
