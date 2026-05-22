@@ -1,19 +1,30 @@
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Themes.Fluent;
+using Serilog;
+using WallpaperPicker;
+using WallpaperPicker.App;
 
-AppBuilder.Configure<WallpaperApp>()
-    .UsePlatformDetect()
-    .StartWithClassicDesktopLifetime(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File(
+        Path.Combine(Constants.LogDirectory, "log-.txt"),
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 14)
+    .CreateLogger();
 
-class WallpaperApp : Application
+try
 {
-    public override void Initialize() => Styles.Add(new FluentTheme());
-
-    public override void OnFrameworkInitializationCompleted()
-    {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.MainWindow = new MainWindow();
-        base.OnFrameworkInitializationCompleted();
-    }
+    Log.Information("Starting WallpaperPicker");
+    AppBuilder.Configure<App>()
+        .UsePlatformDetect()
+        .StartWithClassicDesktopLifetime(args);
+    Log.Information("WallpaperPicker exited normally");
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "WallpaperPicker terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
